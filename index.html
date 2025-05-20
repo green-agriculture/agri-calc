@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أداة الحسابات الزراعية</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #eee;
+            margin-left: 5px;
+            border-radius: 5px 5px 0 0;
+            transition: all 0.3s;
+        }
+        .tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 0 5px 5px 5px;
+            background-color: white;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .signature {
+            text-align: center;
+            margin-top: 30px;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        
+        /* ألوان مختلفة لكل تبويب */
+        #tab1.active { background-color: #e74c3c; }
+        #tab2.active { background-color: #e67e22; }
+        #tab3.active { background-color: #f1c40f; color: #333; }
+        #tab4.active { background-color: #2ecc71; }
+        #tab5.active { background-color: #3498db; }
+        #tab6.active { background-color: #9b59b6; }
+        
+        #content1 { border-top: 3px solid #e74c3c; }
+        #content2 { border-top: 3px solid #e67e22; }
+        #content3 { border-top: 3px solid #f1c40f; }
+        #content4 { border-top: 3px solid #2ecc71; }
+        #content5 { border-top: 3px solid #3498db; }
+        #content6 { border-top: 3px solid #9b59b6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>أداة الحسابات الزراعية</h1>
+        
+        <div class="tabs">
+            <div id="tab1" class="tab active" onclick="openTab('tab1', 'content1')">الإجهاد الحراري</div>
+            <div id="tab2" class="tab" onclick="openTab('tab2', 'content2')">جرعة المضاد الحيوي</div>
+            <div id="tab3" class="tab" onclick="openTab('tab3', 'content3')">كمية العلف اليومية</div>
+            <div id="tab4" class="tab" onclick="openTab('tab4', 'content4')">التهوية (حسب العلف)</div>
+            <div id="tab5" class="tab" onclick="openTab('tab5', 'content5')">التهوية (حسب الوزن)</div>
+            <div id="tab6" class="tab" onclick="openTab('tab6', 'content6')">التهوية (حسب المراوح)</div>
+        </div>
+        
+        <!-- تبويب 1: الإجهاد الحراري -->
+        <div id="content1" class="tab-content active">
+            <h2>حساب الإجهاد الحراري (THI)</h2>
+            <div class="form-group">
+                <label for="temperature">درجة الحرارة (مئوية)</label>
+                <input type="number" id="temperature" step="0.1" placeholder="أدخل درجة الحرارة">
+            </div>
+            <div class="form-group">
+                <label for="humidity">الرطوبة النسبية (%)</label>
+                <input type="number" id="humidity" step="0.1" placeholder="أدخل نسبة الرطوبة">
+            </div>
+            <button onclick="calculateTHI()">حساب الإجهاد الحراري</button>
+            <div id="thiResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <!-- تبويب 2: جرعة المضاد الحيوي -->
+        <div id="content2" class="tab-content">
+            <h2>حساب جرعة المضاد الحيوي</h2>
+            <div class="form-group">
+                <label for="animalWeight">وزن الحيوان (كجم)</label>
+                <input type="number" id="animalWeight" step="0.1" placeholder="أدخل وزن الحيوان">
+            </div>
+            <div class="form-group">
+                <label for="dosePerKg">الجرعة المطلوبة لكل كجم (ملجم/كجم)</label>
+                <input type="number" id="dosePerKg" step="0.1" placeholder="أدخل الجرعة لكل كجم">
+            </div>
+            <div class="form-group">
+                <label for="drugConcentration">تركيز الدواء (ملجم/مل)</label>
+                <input type="number" id="drugConcentration" step="0.1" placeholder="أدخل تركيز الدواء">
+            </div>
+            <button onclick="calculateAntibioticDose()">حساب الجرعة</button>
+            <div id="antibioticResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <!-- تبويب 3: كمية العلف اليومية -->
+        <div id="content3" class="tab-content">
+            <h2>حساب كمية العلف اليومية للعنبر</h2>
+            <div class="form-group">
+                <label for="animalAge">عمر الحيوان (بالأيام)</label>
+                <input type="number" id="animalAge" placeholder="أدخل عمر الحيوان">
+            </div>
+            <div class="form-group">
+                <label for="animalCount">عدد الحيوانات في العنبر</label>
+                <input type="number" id="animalCount" placeholder="أدخل عدد الحيوانات">
+            </div>
+            <button onclick="calculateFeedAmount()">حساب كمية العلف</button>
+            <div id="feedResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <!-- تبويب 4: التهوية حسب العلف -->
+        <div id="content4" class="tab-content">
+            <h2>حساب الحد الأدنى للتهوية بناءً على سحب العلف</h2>
+            <div class="form-group">
+                <label for="feedConsumption">كمية العلف المستهلكة (طن)</label>
+                <input type="number" id="feedConsumption" step="0.1" placeholder="أدخل كمية العلف بالطن">
+            </div>
+            <button onclick="calculateVentilationByFeed()">حساب التهوية</button>
+            <div id="ventilationFeedResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <!-- تبويب 5: التهوية حسب الوزن -->
+        <div id="content5" class="tab-content">
+            <h2>حساب الحد الأدنى للتهوية بناءً على الوزن الحي</h2>
+            <div class="form-group">
+                <label for="liveWeight">الوزن الحي الكلي للحيوانات (كجم)</label>
+                <input type="number" id="liveWeight" placeholder="أدخل الوزن الحي الكلي">
+            </div>
+            <button onclick="calculateVentilationByWeight()">حساب التهوية</button>
+            <div id="ventilationWeightResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <!-- تبويب 6: التهوية حسب المراوح -->
+        <div id="content6" class="tab-content">
+            <h2>حساب الحد الأدنى للتهوية بناءً على قوة المروحة</h2>
+            <div class="form-group">
+                <label for="requiredAir">كمية الهواء المطلوبة (م³/دقيقة)</label>
+                <input type="number" id="requiredAir" step="0.1" placeholder="أدخل كمية الهواء المطلوبة">
+            </div>
+            <div class="form-group">
+                <label for="fanPower">قوة المروحة الواحدة (م³/دقيقة)</label>
+                <input type="number" id="fanPower" step="0.1" placeholder="أدخل قوة المروحة">
+            </div>
+            <button onclick="calculateFansRequired()">حساب عدد المراوح</button>
+            <div id="fansResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="signature">
+            صدقة جارية : نسألكم الدعاء
+        </div>
+    </div>
+
+    <script>
+        function openTab(tabId, contentId) {
+            // إخفاء جميع المحتويات
+            var contents = document.getElementsByClassName('tab-content');
+            for (var i = 0; i < contents.length; i++) {
+                contents[i].classList.remove('active');
+            }
+            
+            // إلغاء تنشيط جميع التبويبات
+            var tabs = document.getElementsByClassName('tab');
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            
+            // عرض المحتوى المحدد وتفعيل التبويب
+            document.getElementById(contentId).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+        
+        function calculateTHI() {
+            var temperature = parseFloat(document.getElementById('temperature').value);
+            var humidity = parseFloat(document.getElementById('humidity').value);
+            
+            if (isNaN(temperature) || isNaN(humidity)) {
+                alert("الرجاء إدخال قيم صحيحة لدرجة الحرارة والرطوبة");
+                return;
+            }
+            
+            var thi = 32.783 + (1.478 * temperature) + (0.056 * humidity);
+            var stressLevel = "";
+            
+            if (thi < 72) {
+                stressLevel = "لا يوجد إجهاد";
+            } else if (thi >= 72 && thi < 79) {
+                stressLevel = "إجهاد خفيف";
+            } else if (thi >= 79 && thi < 89) {
+                stressLevel = "إجهاد";
+            } else {
+                stressLevel = "إجهاد مرتفع";
+            }
+            
+            var resultDiv = document.getElementById('thiResult');
+            resultDiv.innerHTML = `
+                <p>مؤشر الإجهاد الحراري (THI): <strong>${thi.toFixed(2)}</strong></p>
+                <p>مستوى الإجهاد: <strong>${stressLevel}</strong></p>
+            `;
+            resultDiv.style.display = 'block';
+            resultDiv.style.backgroundColor = '#f8d7da';
+        }
+        
+        function calculateAntibioticDose() {
+            var weight = parseFloat(document.getElementById('animalWeight').value);
+            var dose = parseFloat(document.getElementById('dosePerKg').value);
+            var concentration = parseFloat(document.getElementById('drugConcentration').value);
+            
+            if (isNaN(weight) || isNaN(dose) || isNaN(concentration)) {
+                alert("الرجاء إدخال جميع القيم المطلوبة");
+                return;
+            }
+            
+            if (concentration === 0) {
+                alert("تركيز الدواء لا يمكن أن يكون صفر");
+                return;
+            }
+            
+            var totalDose = (weight * dose) / concentration;
+            
+            var resultDiv = document.getElementById('antibioticResult');
+            resultDiv.innerHTML = `
+                <p>الجرعة المطلوبة: <strong>${totalDose.toFixed(2)} مل</strong></p>
+            `;
+            resultDiv.style.display = 'block';
+            resultDiv.style.backgroundColor = '#fff3cd';
+        }
+        
+        function calculateFeedAmount() {
+            var age = parseInt(document.getElementById('animalAge').value);
+            var count = parseInt(document.getElementById('animalCount').value);
+            
+            if (isNaN(age) || isNaN(count)) {
+                alert("الرجاء إدخال قيم صحيحة للعمر والعدد");
+                return;
+            }
+            
+            var feedAmount = age * count * 0.09 * 50;
+            
+            var resultDiv = document.getElementById('feedResult');
+            resultDiv.innerHTML = `
+                <p>كمية العلف اليومية المطلوبة: <strong>${feedAmount.toFixed(2)} كجم</strong></p>
+            `;
+            resultDiv.style.display = 'block';
+            resultDiv.style.backgroundColor = '#d4edda';
+        }
+        
+        function calculateVentilationByFeed() {
+            var feed = parseFloat(document.getElementById('feedConsumption').value);
+            
+            if (isNaN(feed)) {
+                alert("الرجاء إدخال قيمة صحيحة لكمية العلف");
+                return;
+            }
+            
+            var airRequired = feed * 120;
+            
+            var resultDiv = document.getElementById('ventilationFeedResult');
+            resultDiv.innerHTML = `
+                <p>كمية الهواء المطلوبة: <strong>${airRequired.toFixed(2)} م³/دقيقة</strong></p>
+            `;
+            resultDiv.style.display = 'block';
+            resultDiv.style.backgroundColor = '#d1ecf1';
+        }
+        
+        function calculateVentilationByWeight() {
+            var weight = parseFloat(document.getElementById('liveWeight').value);
+            
+            if (isNaN(weight)) {
+                alert("الرجاء إدخال قيمة صحيحة للوزن الحي");
+                return;
+            }
+            
+            var airPerHour = weight * 1.5;
+            var airPerMinute = airPerHour / 60;
+            
+            var resultDiv = document.getElementById('ventilationWeightResult');
+            resultDiv.innerHTML = `
+                <p>كمية الهواء المطلوبة:</p>
+                <p><strong>${airPerHour.toFixed(2)} م³/ساعة</strong></p>
+                <p><strong>${airPerMinute.toFixed(2)} م³/دقيقة</strong></p>
+            `;
+            resultDiv.style.display = 'block';
+            resultDiv.style.backgroundColor = '#e2e3e5';
+        }
+        
+        function calculateFansRequired() {
+            var airRequired = parseFloat(document.getElementById('requiredAir').value);
+            var fanPower = parseFloat(document.getElementById('fanPower').value);
+            
+            if (isNaN(airRequired) || isNaN(fanPower)) {
+                alert("الرجاء إدخال قيم صحيحة لكمية الهواء وقوة المروحة");
+                return;
+            }
+            
+            if (fanPower === 0) {
+                alert("قوة المروحة لا يمكن أن تكون صفر");
+                return;
+            }
+            
+            var fansRequired = airRequired / fanPower;
+            
+            var resultDiv = document.getElementById('fansResult');
+            resultDiv.innerHTML = `
+                <p>عدد المراوح المطلوبة: <strong>${Math.ceil(fansRequired)} مروحة</strong></p>
+                <p>(تقريب لأعلى عدد صحيح)</p>
+            `;
+            resultDiv.style.display = 'block';
+            resultDiv.style.backgroundColor = '#d6d8db';
+        }
+    </script>
+</body>
+</html>
